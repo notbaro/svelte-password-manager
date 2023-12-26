@@ -20,7 +20,7 @@
 <div class="flex items-center justify-center">
 	<div class="card p-4 m-4 min-w-96 variant-ghost-surface">
 		<header class="card-header">
-			<h1 class="text-2xl font-bold text-on-surface-token text-center">Register</h1>
+			<h1 class="text-2xl font-bold text-on-surface-token text-center">Login</h1>
 		</header>
 		<section class="p-4">
 			<form action="?/register" method="POST" use:enhance>
@@ -41,7 +41,7 @@
 					class="input variant-form-material text-on-surface-token"
 				/>
 				<button type="submit" class="btn variant-filled-primary w-full text-xl font-bold mt-3"
-					>Register</button
+					>Login</button
 				>
 			</form>
 		</section>

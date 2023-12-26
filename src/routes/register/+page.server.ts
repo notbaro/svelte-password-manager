@@ -13,6 +13,5 @@ const register: Action = async ({ request }) => {
 }
 
 export const load: PageServerLoad = async () => {
-    //todo
 }
 export const actions: Actions = { register }
