@@ -1,12 +1,14 @@
 <script lang="ts">
 	import '../app.postcss';
-	import { AppShell, AppBar, Avatar, type PopupSettings, popup } from '@skeletonlabs/skeleton';
+	import { AppShell, AppBar, Avatar, type PopupSettings, popup, initializeStores, ProgressRadial } from '@skeletonlabs/skeleton';
 	import { CircleUserRound, Home, UserRoundIcon } from 'lucide-svelte';
 
 	// Highlight JS
 	import hljs from 'highlight.js/lib/core';
 	import 'highlight.js/styles/github-dark.css';
 	import { storeHighlightJs } from '@skeletonlabs/skeleton';
+	import { Toast, getToastStore } from '@skeletonlabs/skeleton';
+	import type { ToastSettings, ToastStore } from '@skeletonlabs/skeleton';
 	import xml from 'highlight.js/lib/languages/xml'; // for HTML
 	import css from 'highlight.js/lib/languages/css';
 	import javascript from 'highlight.js/lib/languages/javascript';
@@ -21,8 +23,7 @@
 	// Floating UI for Popups
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
-	import { user } from '$lib/stores/user';
-	import { firebaseAuth } from '$lib/firebase';
+	import { firebaseAuth, user } from '$lib/firebase';
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
 	const popupClick: PopupSettings = {
@@ -31,14 +32,11 @@
 		placement: 'top'
 	};
 
-	function handleAvatarClick(e: MouseEvent): void {
-		const b = document.getElementById('avabutton') as HTMLButtonElement;
-		b.click();
-	}
-
+	initializeStores();
 	function handletLogOut() {
 		firebaseAuth.signOut();
 	}
+
 </script>
 
 <!-- App Shell -->
@@ -48,9 +46,9 @@
 
 		{#await firebaseAuth.authStateReady()}
 			<AppBar>
-				<div class="placeholder" />
+				<ProgressRadial></ProgressRadial>
 			</AppBar>
-		{:then _}
+		{:then f}
 			<AppBar
 				><svelte:fragment slot="lead">
 					<strong class="text-xl uppercase">Password Manager</strong>
@@ -61,21 +59,27 @@
 						<a href="/register" class="btn hover:variant-ghost-primary">Register</a>
 						<a href="/login" class="btn hover:variant-ghost-primary">Login</a>
 					{:else}
-					<button use:popup={popupClick}><Avatar
-							border="border-4 border-surface-300-600-token hover:!border-primary-500"
-							cursor="cursor-pointer"
-							class="w-11"
-							src={$user.photoURL ?? ''}
-						></Avatar></button>
+						<button use:popup={popupClick}
+							><Avatar
+								border="border-4 border-surface-300-600-token hover:!border-primary-500"
+								cursor="cursor-pointer"
+								width="w-11"
+								src={$user.photoURL ?? ''}
+							></Avatar></button
+						>
 
-						
-						
 						<!--popup content-->
 						<div class="card p-4 variant-soft-primary" data-popup="popupClick">
 							<div class="flex items-center justify-center flex-col">
 								<span class="text-on-primary-token text-center">{$user.email}</span>
-								<a href="profile" class="btn variant-filled-secondary	my-1"><UserRoundIcon/>Profile</a>
-								<button type="button" class="btn variant-filled-secondary	my-1" on:click={handletLogOut}>Logout</button>
+								<a href="profile" class="btn variant-filled-secondary my-1"
+									><UserRoundIcon />Profile</a
+								>
+								<button
+									type="button"
+									class="btn variant-filled-secondary my-1"
+									on:click={handletLogOut}>Logout</button
+								>
 							</div>
 						</div>
 						<!--end of popup content-->

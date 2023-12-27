@@ -1,8 +1,7 @@
-
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { GithubAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
+import { GithubAuthProvider, getAuth, onAuthStateChanged, signInWithPopup, type User, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { GoogleAuthProvider } from "firebase/auth";
+import { readable } from "svelte/store";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -32,4 +31,24 @@ export const signInWithGoogle = () => {
 
 export const signInWithGithub = async () => {
   return await signInWithPopup(firebaseAuth, githubProvider);
+}
+
+export const user = readable<User | null | undefined>(undefined, set => onAuthStateChanged(firebaseAuth, set))
+
+export const signOut = async () => {
+  return await firebaseAuth.signOut();
+}
+
+export const createNewUser =  (email: string, password: string) => {
+  return createUserWithEmailAndPassword(firebaseAuth, email, password);
+}
+
+
+export const sendVerification = async () => {
+  if (!user || !firebaseAuth.currentUser) {
+    throw error("No user found");
+    return;
+  } 
+
+  return await sendEmailVerification(firebaseAuth.currentUser);
 }

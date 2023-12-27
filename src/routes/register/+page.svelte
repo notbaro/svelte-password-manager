@@ -3,18 +3,35 @@
 	import Google from '$lib/icons/Google.svelte';
 	import { firebaseAuth, signInWithGithub, signInWithGoogle } from '$lib/firebase';
 	import { Github } from 'lucide-svelte';
-	import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 	import { goto } from '$app/navigation';
+	import { ProgressRadial, getToastStore } from '@skeletonlabs/skeleton';
+	import type { FirebaseError } from 'firebase/app';
+	import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+
+	let email = '';
+	let password = '';
+
+	const toastStore = getToastStore();
 
 	const handleGoogleLogin = async () => {
-		await signInWithGoogle()
-		await goto('/')
+		try {
+			await signInWithPopup(firebaseAuth, new GoogleAuthProvider());
+			await goto('/');
+		} catch (error) {
+			toastStore.trigger({
+				message: typeof error,
+				background: 'variant-filled-error'
+			})	
+		}
 	};
 
 	const handleGithubLogin = async () => {
-		await signInWithGithub()
+		await signInWithGithub();
 		await goto('/');
 	};
+
+	const handleSubmit = async () => {};
+
 </script>
 
 <div class="flex items-center justify-center">
@@ -23,7 +40,7 @@
 			<h1 class="text-2xl font-bold text-on-surface-token text-center">Register</h1>
 		</header>
 		<section class="p-4">
-			<form action="?/register" method="POST" use:enhance>
+			<form on:submit={handleSubmit}>
 				<label for="email" class="label font-semibold text-on-surface-token">Email</label>
 				<input
 					name="email"
@@ -46,12 +63,16 @@
 			</form>
 		</section>
 		<footer class="card-footer">
-			<button type="button" class="btn variant-filled-secondary w-full text-xl font-bold text-on-secondary-token my-2" on:click={handleGoogleLogin}
+			<button
+				type="button"
+				class="btn variant-filled-secondary w-full text-xl font-bold text-on-secondary-token my-2"
+				on:click={handleGoogleLogin}
 				>Login with Google&nbsp;
 				<Google /></button
 			>
-			<button class="btn variant-filled-secondary w-full text-xl font-bold text-on-secondary-token" on:click={handleGithubLogin}
-				>Login with Github &nbsp;<Github /></button
+			<button
+				class="btn variant-filled-secondary w-full text-xl font-bold text-on-secondary-token"
+				on:click={handleGithubLogin}>Login with Github &nbsp;<Github /></button
 			>
 		</footer>
 	</div>
